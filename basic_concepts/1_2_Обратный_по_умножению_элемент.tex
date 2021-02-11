@@ -1,0 +1,18 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Нахождение обратного по умножению элемента в конечном поле}
+
+При нахождении обратного по умножению элемента для элемента $e$ в конечном поле по модулю $N$ сперва запускается \href{https://yatb.kksctf.ru/}{расширенный алгоритм Евклида} для $(N, e)$. Он выдаёт тройку $(1, i, j)$, где $in+je\equiv 1 (mod\ N)$. Отсюда следует $je \equiv 1 (mod\ N)$, и поэтому $j=e^{-1}=d$. 
+	
+\end{document}

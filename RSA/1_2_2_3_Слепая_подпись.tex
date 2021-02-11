@@ -1,0 +1,33 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+
+\begin{document}
+
+\section{"Слепое" подписывание сообщения}
+
+Данная атака основана на мультипликативном свойстве RSA:
+
+Иногда требуется получить подпись на конкретное сообщение у системы, которая этого делать не хочет. В случае, если в роли подписи выступает алгоритм RSA,  то возможно получить подпись на сообщение даже без согласия на это самой системы. Делается это следующим образом:
+
+Изначально у нас есть сообщение $M$, которое требуется подписать, но система делать это отказывается. Для этого мы можем выбрать случайное $r \in \mathbb{Z}^*_N$, собираем конструкцию следующего вида: $M^\prime =r^eM\ mod N$ и просим систему подписать сообщение $M^\prime$:
+
+$$S^\prime = (M^\prime)^{d}\ mod\ N$$
+
+Но, если мы распишем $M^\prime$, то получим следующую конструкцию:
+
+$$S^\prime=(M^\prime)^{d}\ mod\ N = (r^eM)^{d}\ mod\ N = r^{ed}M^{d}\ mod\ N = rM^{d}\ mod\ N$$
+
+То есть чтобы получить подписанное сообщение $M$, нам просто нужно разделить $S^\prime$ на $r$.\\
+
+\textbf{Источник:}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}
+
+\end{document}

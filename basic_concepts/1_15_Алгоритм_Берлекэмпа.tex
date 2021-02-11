@@ -1,0 +1,51 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Алгоритм Берлекэмпа}
+
+На входе алгоритма задан унитарный многочлен $f(x) \in GF(q)[x],\ \deg f(x)=n \geq 2$, про который известно, что он не имеет кратных неприводимых множителей. На выходе — разложение $f(x)$ на неприводимые множители:
+
+\begin{enumerate}
+	\item Вычислить матрицу $B=\|b_{ij}\|_{i,j=0,...,n-1}$ из сравнений:
+	$$x^{iq}\equiv \sum_{j=0}^{n-1}b_{ij}x^i\ (mod\ f(x)),\qquad i=0,..,n-1$$
+	То есть результатом решения сравнения $x^{iq}\equiv g_i(x)\ (mod\ f(x))$ будет многочлен $g_i(x)=\sum_{j=0}^{n-1}b_{ij}x^i$, а вектор из его коэффициентов и будет $i$-ой строкой матрицы.
+	
+	\item Найти базис пространства решений системы линейных уравнений
+	
+	$$B_1\begin{pmatrix}
+		x_0\\
+		...\\
+		x_{n-1}
+	\end{pmatrix}=0,$$
+	
+	где $B_1=(B-E_n)^T,\ E_n$ — единичная матрица, знак $(...)^T$ означает транспонирование. Пусть $\overline{e}_1=(1, 0,...,0),\overline{e}_2,...,\overline{e}_k$ - найденный базис.
+	
+	\item При $k=1$ многочлен $f(x)$ неприводим; вообще, найденное значение $k$ равно количеству неприводимых делителей $f(x)$ в $GF(q)[x]$. При $k>1$ надо взять $\overline{e}_2=(h_{2,0},...,h_{2,n-1})$ и построить $f$-разлагающий многочлен $h_2(x)=\sum_{i=0}^{n-1}h_{2,i}x^i$. С его помощью, вычисляя НОД$(f(x),h_2(x)-c)$ при $c \in GF(q)$, найти разложение 
+	
+	$$f(x)=g_1(x)...g_l(x),$$
+	
+	где $g_i(x) \in GF(q)[x],\ l \geq 2$. Если $l=k$, то алгоритм останавливается. Если $l<k$, то мы берём $\overline{e}_3=(h_{3,0},...,h_{3,n-1})$, строим $h_3(x)=\sum_{i=0}^{n-1}h_{3,i}x^i$. Вычисляя НОД$(g_i(x),h_3(x)-c)$ для найденных $g_i(x)$, мы получаем дальнейшее разложение $f(x)$, и т.д. Алгоритм закончит работу, когда мы переберём все базисные векторы $\overline{e}_2,...,\overline{e}_k$, и для соответствующих им многочленов $h_i(x)$ вычислим наибольшие общие делители найденных множителей $f(x)$ с $h_i(x)-c,\ c \in GF(q)$.
+	
+	\item Алгоритм останавливается, как только мы найдём разложение $f(x)$ на $k$ множителей, где $k=n - rank\ B_1$.
+	
+\end{enumerate}
+
+\textbf{Источники:}
+
+Василенко О. Н. 'Теоретико-числовые алгоритмы в криптографии' Интернет-источник: 
+
+(\href{http://window.edu.ru/resource/845/23845/files/book.pdf}{http://window.edu.ru/resource/845/23845/files/book.pdf}), страница 173
+
+\href{https://github.com/emcd123/PolynomialFactorization/blob/master/FinalBerlekamp.sagews}{https://github.com/emcd123/PolynomialFactorization/blob/master/FinalBerlekamp.sagews}
+	
+\end{document}

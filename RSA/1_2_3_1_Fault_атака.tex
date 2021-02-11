@@ -1,0 +1,40 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Fault-атака}
+
+При программной реализации алгоритма RSA иногда предпочитают проводить вычисления не с модулем $n$, а прямо с числами $p$ и  $q$  - это позволяет ускорить вычисления и сделать реализацию эффективнее. А помогает в этом \href{https://yatb.kksctf.ru/}{Китайская теорема об остатках}. Применяя данную теорему на практике, можем получить следующую конструкцию:
+
+$$\left.\parbox{3.5cm}{$s_{1} = m^{d_p}\ (mod\ p) \\ s_{2} = m^{d_q}\ (mod\ q)$}  \right\} \rightarrow s\ (mod\ pq)$$
+
+Иногда данная оптимизация может сыграть злую шутку: допустим, мы хотим использовать такую ускоренную реализацию для цифровой подписи: в этом режиме сообщение 'подписывается' на закрытом ключе, а 'проверяется' целостность сообщения на открытом ключе.
+
+Но если в вычислениях (например, $s_{2}$) происходит ошибка, то мы получаем следующий результат при подписании сообщения:
+
+$$\left.\parbox{3.5cm}{$s_{1} = m^{d_p}\ (mod\ p) \\ \widetilde{s_{2}} = m^{d_q}\ (mod\ q)$}  \right\} \rightarrow \widetilde{s}\ (mod\ pq)$$
+
+Теперь у нас есть неправильно подписанное сообщение, которое обладает следующими свойствами при его "проверке":
+
+$$\begin{cases} \widetilde{s^e} = m\ (mod\ p)\\ \widetilde{s^e} \neq m\ (mod\ q) \end{cases} \rightarrow \begin{cases} \widetilde{s^e} - m = 0\ (mod\ p)\\ \widetilde{s^e} -m \neq 0\ (mod\ q) \end{cases} \rightarrow \begin{cases} p | \widetilde{s^e} - m \\ q \nmid \widetilde{s^e} -m \end{cases} $$
+
+То есть $\widetilde{s^e} - m = pk$, где $k$ - какое-то число. Поэтому если мы посчитаем НОД$(\widetilde{s^e} - m, N)$, то мы получим НОД$(\widetilde{s^e} - m, N)=p$. Таким образом мы разложили модуль $N$ - теперь нам не составит труда найти $d$, зная $e$.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/fault_attack.sage}
+
+\textbf{Источник:}
+
+\href{https://www.cryptologie.net/article/371/fault-attacks-on-rsas-signatures/}{https://www.cryptologie.net/article/371/fault-attacks-on-rsas-signatures/}
+
+\end{document}

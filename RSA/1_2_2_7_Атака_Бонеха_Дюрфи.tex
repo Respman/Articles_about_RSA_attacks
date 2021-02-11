@@ -1,0 +1,114 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Маленькая экспонента d: атака Бонеха-Дюрфи (Boneh-Durfee attack)}
+
+Данная атака позволяет получить закрытую экспоненту $d$, если $d< N^{0.292}$ - достаточно мало.
+
+Рассмотрим цепочку преобразований:
+
+$$\parbox{8cm}{$ed \equiv 1\ (mod\ \phi(N)) \\
+	\rightarrow ed=k*\phi(N)+1 \\
+	\rightarrow k*\phi(N)+1 \equiv 0\ (mod\ e) \\
+	\rightarrow k*(p-1)*(q-1)+1 \equiv 0\ (mod\ e) \\
+	\rightarrow k*(N+1-p-q)+1 \equiv 0\ (mod\ e) \\
+	\rightarrow k*(\frac{N+1}{2}+\frac{-p-q}{2})+1 \equiv 0\ (mod\ e)$}$$
+
+Теперь если мы обозначим $\frac{N+1}{2}=A,\ \frac{-p-q}{2}=y,\ 2k=x$, тогда мы получим многочлен от двух переменных: 
+
+$$f(x,y)=1+x(A+y)$$
+
+Корни этого многочлена помогут нам вычислить закрытую экспоненту $d$.
+
+Мы могли бы использовать \href{https://yatb.kksctf.ru/}{метод Копперсмита} и могли бы получить оценку $d < N^{0.284}$, но для данного конкретного уравнения существует достаточно красивая оптимизация, которая позволяет поднять оценку эффективности алгоритма до $d < N^{0.292}$, поэтому мы сразу рассмотрим оптимизированный алгоритм.
+
+Для успешной атаки должны соблюдаться условия: $d < N^{\delta},\ |x|< 2N^{\delta},\  |y| < N^{0.5},\ \delta < 1-\dfrac{\sqrt{2}}{2} \approx 0.292,\ t=\tau m=(1-2\delta)m,\ m$ подбирается по условию, которое юудет описано ниже. Для начала можно поставить $m=4$.
+
+Для начала проведём замену переменной $u=xy+1$, чтобы линеаризовать многочлен:
+
+$$\overline{f}(x,u)=u+Ax\ (mod\ e)$$
+
+Построим полиномы  для $k=0,...,m:$
+
+$$\overline{g}_{i,k}(u,x)=x^i*\overline{f}^k(u,x)*e^{m-k}\text{ для }k=0,...,m\text{ и }i=0,...,m-k$$
+$$h_{j,k}(u,x,y)=y^j*\overline{f}^k(u,x)*e^{m-k}\text{ для }j=0,...,t\text{ и }k=\lfloor\dfrac{m}{t}\rfloor,...,m$$
+
+Которые называются $x$-сдвигом ($\overline{g}_{i,k}$) и $y$-сдвигом ($\overline{h}_{j,k}$).
+
+Собираем из них матрицу:
+
+$$B = \begin{pmatrix}
+	f_1(xX,yY)\\
+	...\\
+	f_n(xX,yY)
+\end{pmatrix}=$$
+
+\begin{center}
+	\begin{table}[H]
+		
+		\begin{tabular}{cc}
+			
+			& 1\ \qquad$x$\ \qquad$u$\ \qquad$x^2$\ \qquad$ux$\ \qquad$u^2$\ \qquad$u^2y$\\
+			
+			\begin{tabular}[c]{@{}c@{}}$e^2$\\\\ $xe^2$\\\\ $\overline{f}e$\\\\ $x^2e^2$\\\\ $x\overline{f}e$\\\\ $\overline{f}^2$\\\\ $y\overline{f}^2$\end{tabular} & \begin{tabular}[c]{@{}c@{}}$\begin{pmatrix}\\ e^2&&&&&&\\\\ &e^2X&&&&&\\\\ &eAX&eU&&&&\\\\ &&&e^2X^2&&&\\\\ &&&e^2AX^2&eUX&&\\\\ &&&A^2X^2&2AUX&U^2&\\\\ &-A^2X&-2AU&&A^2UX&2AU^2&U^2Y\\\\ \end{pmatrix}$\end{tabular}
+			
+		\end{tabular}
+		
+	\end{table}
+\end{center}
+
+Проверяем условие, которое накладывается на определитель матрицы:
+
+$$det(B)<e^{mn}$$
+
+Если вдруг получилось так, что это условие не выполняется, увеличиваем значение $m$ и пересобираем матрицу $B$.
+
+Далее на матрицу $B$ применяется \href{https://yatb.kksctf.ru/}{LLL-алгоритм}.\\
+
+$$B = \begin{pmatrix}
+	b_1=g_1(xX,yY)\\
+	b_2=g_2(xX,yY)\\
+	...\\
+	b_n
+\end{pmatrix}$$
+
+После работы LLL-алгоритма в получившейся матрице находим два линейно-независимых вектора и представляем их как коэффициенты многочленов:
+
+$$g_1(x_0,y_0)\equiv 0\ (mod\ e^m)\text{ где } |g_1(xX,yY)|<\dfrac{e^m}{\sqrt{n}}$$
+$$g_2(x_0,y_0)\equiv 0\ (mod\ e^m)\text{ где } |g_2(xX,yY)|<\dfrac{e^m}{\sqrt{n}}$$
+
+Так как выполняются условия теоремы Копперсмита, то мы из уравнений над конечными полями $(mod\ e^m)$ можем перейти к полю целых чисел и решать уравнения над ним.
+
+Получаем
+$$g_1(x_0,y_0) = 0$$
+$$g_2(x_0,y_0) = 0$$
+
+То есть в итоге мы получили систему из двух уравнений от двух переменных - так как уравнениями мы взяли линейно независимые вектора из сокращённого LLL-алгоритмом базиса, то значит у системы есть единственное решение.
+
+Как итог получаем многочлен $r(x)=resultant_x(g_1,g_2)$, корни которого можно найти любым численным методом, например комбинацией \href{https://yatb.kksctf.ru/}{алгоритма Берлекемпа} и \href{https://yatb.kksctf.ru/}{линейного подъёма Гензеля}.
+
+После чего мы можем вычислить $k = x/2$, решить сравнение $k*\phi(N)+1\equiv 0\ (mod\ e)$ и в конечном итоге получить $d$, используя \href{https://yatb.kksctf.ru/}{расширенный алгоритм Евклида}.
+
+\textbf{Sage-реализация:}\\
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/boneh_Durfee.sage}
+
+\textbf{Источник:}
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+\href{https://www.cryptologie.net/article/241/implementation-of-boneh-and-durfee-attack-on-rsas-low-private-exponents/}{https://www.cryptologie.net/article/241/implementation-of-boneh-and-durfee-attack-on-rsas-low-private-exponents/}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}
+
+\end{document}

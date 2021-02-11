@@ -1,0 +1,58 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Китайская теорема об остатках}
+
+Китайская теорема об остатках (CRT — Chinese Reminder Theorem) используется, чтобы решить множество уравнений с одной переменной, но различными взаимно простыми модулями, как это показано ниже:
+
+$${\begin{cases}x\equiv a_{1}{\pmod {m_{1}}},\\x\equiv a_{2}{\pmod {m_{2}}},\\\cdots \cdots \cdots \cdots \cdots \cdots \\x\equiv a_{n}{\pmod {m_{n}}}.\\\end{cases}}$$
+
+Китайская теорема об остатках утверждает, что вышеупомянутая сисетма сравнений имеет единственное решение, если модули являются попарно взаимно простыми. \\
+
+\textbf{Алгоритм решения системы сравнений:}
+
+Решение системы сравнений выполняется в следующем порядке:
+
+\begin{enumerate}
+	\item Найти $M = {m_1} \times {m_2} \times \ldots \times {m_k}$. Это общий модуль.
+	
+	\item Найти $M_1 = M/m_1, M_2 = M/m_2,..., M_k = M/m_k$.
+	
+	\item Используя соответствующие модули $m_1, m_2,..., m_k$, найти \href{https://yatb.kksctf.ru/}{обратные по умножению элементы} для элементов $M_1, M_2,..., M_k$. Обозначим их $M_1^{-1}, M_2^{-1},…, M_k^{-1}$.
+	
+	\item Решение системы уравнений
+	$$x = (a_{1} \times M_{1} \times M_{1}^{-1} + a_{2} \times M_{2} \times M_{2}^{-1}+\dots+ a_{k} \times M_{k} \times M_{k}^{-1}) \mod\ M$$
+\end{enumerate}
+
+\textbf{Пример }
+
+Найдём решение системы уравнений
+$${\begin{cases}x\equiv 2{\pmod 3},\\x\equiv 3{\pmod 5},\\x\equiv 2{\pmod 7}.\\\end{cases}}$$
+
+\textbf{Решение}
+
+\begin{enumerate}
+	\item $M = 3 \times 5 \times 7 = 105$
+	
+	\item $M_1 = 105/3 = 35,\ M_2 = 105/5 =21,\ M_3 = 105/7 = 15$
+	
+	\item Инверсии $M_1^{-1} = 2,\ M_2^{-1} = 1,\ M_3^{-1} = 1$
+	
+	\item $x = 2 \times 35 \times 2 + 3 \times 21 \times 1 + 2 \times 15 \times 1 = 23\ mod\ 105$
+\end{enumerate}
+
+\textbf{Источник:}\\
+
+\href{https://www.intuit.ru/studies/courses/552/408/lecture/9368?page=8}{https://www.intuit.ru/studies/courses/552/408/lecture/9368?page=8}
+	
+\end{document}

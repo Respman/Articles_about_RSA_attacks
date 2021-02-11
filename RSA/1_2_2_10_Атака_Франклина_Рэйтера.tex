@@ -1,0 +1,36 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Атака Франклина-Рэйтера (Franklin-Reiter) на линейно зависимые сообщения}
+
+Данная атака используется, когда по одному и тому же модулю абоненты производят шифрование двух сообщений, которые являются функционально зависимыми друг от друга (в нашем случае зависимость будет линейная). При этом функция зависимости нам известна: $M_2=f(M_1)\ mod\ N$, $f=ax+b \in \mathbb{Z}_N[x]$, где $b\neq 0$. В таком случае, получив шифротексты $C_1$ и $C_2$, мы сможем восстановить исходные тексты сообщений $M_1$ и $M_2$ с помощью данной атаки.
+
+Так как мы знаем, что $C_1 = M_1^e\ mod\ N$, мы знаем также что и $M_2$ - корень многочлена $g_1(x) = f(x)^e - C_1 \in \mathbb{Z}_N[x]$. Аналогично,  $M_1$ - корень многочлена $g_2(x) = x^e - C_2 \in \mathbb{Z}_N[x]$. Поэтому множитель $(x-M_2)$ делит оба многочлена. А значит мы можем посчитать НОД$(g_1,g_2)=x-M_2$. Если значение НОД линейно, то мы нашли открытое сообщение $M_2$.
+
+Получить НОД двух многочленов можно по \href{https://yatb.kksctf.ru/}{алгоритму Евклида} - он не чувствителен к природе элементов, с которыми работает. Делить один многочлен на другой можно \href{https://yatb.kksctf.ru/}{столбиком}.\\
+
+Хочется отметить, что для $e=3$  НОД всегда будет линейным. Но с увеличением $e$ сложность расчёта НОД сильно растёт, что замедляет атаку.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/franclin-reiter.sage}
+
+\textbf{Источники:}
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}
+
+\href{https://github.com/yud121212/Coppersmith-s-Short-Pad-Attack-Franklin-Reiter-Related-Message-Attack/blob/master/coppersmiths_short_pad_attack.sage}{https://github.com/.../coppersmiths\_short\_pad\_attack.sage}
+
+\end{document}

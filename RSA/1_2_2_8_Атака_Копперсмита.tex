@@ -1,0 +1,40 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Атака Копперсмита}
+
+Атака Копперсмита заключается в том, что мы можем дешифровать сообщение, если мы знаем его часть: например, мы знаем, что зашифрованное сообщение имеет примерный вид "the password is : <тут пишется пароль>". Например, \textit{"the password is : cupcake"}.
+
+То есть мы можем представить наше сообщение как $m=m_0+x_0$, где $m_0$ известно, а $x_0$ неизвестен.
+
+Атака представляет из себя нахождение решения $x$ полинома следующего вида:
+
+$$f(x)=(m_0+x)^e-c,\text{ где } f(x_0)=0\ (mod\ N) $$
+
+Атака Копперсмита сможет найти нам решение $f(x) \equiv 0\ (mod\ N)$, где $|x_0| \leq N^{\dfrac{1}{e}}$.
+
+То есть мы сможем восстановить $\dfrac{1}{e}$ неизвестную часть сообщения, если остальное известно. Данное уравнение можно решить \href{https://yatb.kksctf.ru/}{методом Копперсмита}.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/koppersmith.sage}
+
+\textbf{Источники:}
+
+Alexander May \textit{Using LLL-Reduction for Solving RSA and Factorization Problems}
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+\href{https://www.di.ens.fr/~fouque/ens-rennes/coppersmith.pdf}{D.Coppersmith.Small solutions to polynomial equations, and low exponent RSA vulnerabilities. Journal of Cryptology, 10:233-260, 1997.}
+
+\end{document}

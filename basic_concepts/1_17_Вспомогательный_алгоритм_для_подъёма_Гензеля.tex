@@ -1,0 +1,36 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Алгоритм решения полиномиального уравнения в $\mathbb{Z}_{p^j}[x]$}
+
+Для данных полиномов $a(x),\ b(x),\ c(x),\ g_i(x),\ h_j(x)$ в $\mathbb{Z}_{p^j}[x]$, таких, что $g_j(x)a(x)+h_j(x)b(x)=1$ над $\mathbb{Z}_{p^j}$ и старшие коэффициенты полиномов $a(x),\ b(x),\ g_i(x),\ h_j(x)$ обратимы в $\mathbb{Z}_{p^j}$, данный алгоритм вычисляет полиномы $a'(x)$ и $b'(x)$ в $\mathbb{Z}_{p^j}[x]$ такие, что $g_j(x)a'(x)+h_j(x)b'(x)=c(x)$ над $\mathbb{Z}_{p^j}$ при условии, что $deg[a'(x)]<deg[h_j(x)]$ следующим образом. Далее этот алгоритм применяется только в случае, когда $deg[c(x)]<deg[g_i(x)\cdot h_i(x)]$. Тогда в качестве $a'(x)$ и $b'(x)$ можно взять остатки от деления полиномов $a(x)c(x)$ и $b(x)c(x)$ на $h_j(x)$ и $g_j(x)$ соответственно.
+
+\begin{enumerate}
+	\item Хотя коэффициенты полиномов принадлежат не полю, а кольцу $\mathbb{Z}_{p^j}$, предположение об обратимости старших коэффициентов позволяет использовать алгоритм деления полиномов над полем, чтобы вычислить в $\mathbb{Z}_{p^j}[x]$ полиномы $q(x)$ и $r(x)$ такие, что $a(x)c(x)=h_j(x)q(x)+r(x)$ и $deg[r(x)]<deg[h_j(x)]$.
+	
+	\item Полагаем $a'(x) := r(x),\ b'(x) :=b(x)c(x)+g_i(x)q(x)$.
+	
+	Тогда
+	
+	$$g_j(x)a'(x)+h_j(x)b'(x)=g_j(x)[a(x)c(x)-h_j(x)q(x)]+$$
+	$$+h_j(x)[b(x)c(x)+g_i(x)q(x)]=[g_j(x)a(x)+h_j(x)b(x)]c(x)=c(x)\text{ в } \mathbb{Z}_{p^j}.$$
+	
+\end{enumerate}
+
+\textbf{Источник:}
+
+Акритас А. Основы компьютерной алгебры с приложениями. Интернет-источник:
+
+\href{https://scask.ru/r_book_oca.php?id=79}{https://scask.ru/r\_book\_oca.php?id=79}, стр 420
+	
+\end{document}

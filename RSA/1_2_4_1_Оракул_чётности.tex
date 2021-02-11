@@ -1,0 +1,68 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Оракул чётности (Pairing oracle)}
+
+В данном случае сервис, с которым мы будем общаться, всегда даёт нам информацию об одном бите исходного сообщения по его зашифрованному виду - последний бит, то есть "чётность" сообщения. Этого достаточно, чтобы узнать исходное сообщение.
+
+Допустим, мы знаем, что $m$ - чётное, но мы знаем только $m^e\ (mod\ N)$.
+
+Отправим сервису $2^e*m^e\ (mod\ N)=(2*m)^e\ (mod\ N)$.
+
+Если $m > \dfrac{N}{2}$, то результат расшифрования $(2*m-N)$ - нечётный, учитывая, что $n$ всегда нечётно (так как оно выбрано как произведение двух больших простых чисел). 
+
+Если $m<\dfrac{N}{2}$, то результат расшифрования $(2*m)$ - чётный, сервис не выдал нам сообщение об неправильном паддинге.
+
+Запишем эти утверждения в виде таблицы:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\multicolumn{2}{|l|}{\textbf{границы $m$}} & \textbf{$2m\ mod\ N$} & \textbf{Чётность} \\ \hline
+		0                    & N/2                 & 2m                    & чётный            \\ \hline
+		N/2                  & N-1                 & 2m - N                & нечётный          \\ \hline
+	\end{tabular}
+\end{table}
+
+Таким образом, если мы умножим шифротекст на $2^e$ и вызовем оракул чётности на полученном шифротексте, то узнаем, находится ли открытый текст в первой или второй половине интервала $[0, n-1]$. 
+
+Если мы умножим на $4^e$ (для ускорения работы программы можно результат предыдущих вычислений ещё раз умножить на $2^e$), то получим четыре случая:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\multicolumn{2}{|l|}{\textbf{Границы $m $}} & \textbf{$4m\ mod\ N $} & \textbf{Четность} \\ \hline
+		0                    & N/4                  & 4m                     & чётное            \\ \hline
+		N/4                  & N/2                  & 4m - N                 & нечётное          \\ \hline
+		N/2                  & 3N/4                 & 4m - 2N                & четное            \\ \hline
+		3N/4                 & N-1                  & 4m - 3N                & нечетное          \\ \hline
+	\end{tabular}
+\end{table}
+
+Рассматривая чётность $4m\ mod\ N$, мы таким образом обнаруживаем, принадлежит ли сообщение интервалу первой/третьей или второй/четвёртой четверти.
+
+Этот шаг легко обобщить на $2^iM\ mod\ N$ для $i$-ой итерации. Этого достаточно для реализации бинарного поиска: на каждом шаге мы делим интервал возможных открытых текстов на два и затем спускаемся в правильный в зависимости от чётности, которую раскрывает оракул.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/parity_oracle.sage}
+
+\textbf{Источники:}
+
+\href{http://secgroup.dais.unive.it/wp-content/uploads/2012/11/Practical-Padding-Oracle-Attacks-on-RSA.html}{http://secgroup.dais.unive.it/...Padding-Oracle-Attacks-on-RSA.html}
+
+\href{https://www.youtube.com/watch?v=ibfb7\_-\_CGg\&list=PLLguubeCGWoaGFEDzduGmBhEgZ62p-Jqv\&index=6}{https://www.youtube.com/...\&index=6}
+
+\end{document}

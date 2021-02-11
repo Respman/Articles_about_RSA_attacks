@@ -1,0 +1,27 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+
+\begin{document}
+
+\section{Мультипликативное свойство RSA}
+
+Если внимательно присмотреться к RSA, то можно заметить, что система обладает  мультипликативным свойством, то есть
+
+$$RSA(m_1)*RSA(m_2)=RSA(m_1*m_2),$$
+
+потому что 
+
+$$m_1^e*m_2^e = (m_1*m_2)^e\ (mod\ n)$$
+
+Иногда данное свойство ещё называют гомоморфностью RSA относительно умножения.
+
+Этот факт можно применить следующим образом: если у вас есть шифрование открытых текстовых чисел 2, 3 и 5, то мы сможем создать каждый зашифрованный текст, который может быть составлен как произведение этих чисел, например 4, 8, 16, 32 ..., или 6, 9, 12, 15, 18, 24... 
+
+\end{document}

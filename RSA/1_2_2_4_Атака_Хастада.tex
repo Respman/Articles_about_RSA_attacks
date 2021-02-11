@@ -1,0 +1,47 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Атака Хастада (broadcast attack)}
+
+Данная атака основана на допущении, при котором для разных модулей используется одинаковая открытая экспонента $e$ и одинаковое исходное сообщение, которое будет зашифровано: 
+
+$$C_1 = M^e\ mod N_1$$
+$$C_2 = M^e\ mod N_2$$
+$$...$$
+$$C_e = M^e\ mod N_e$$
+
+Также все модули должны быть попарно взаимно простыми, то есть  НОД$(N_i, N_j) = 1,$ для всех $i\neq j$ - иначе бы мы смогли факторизовать какой-нибудь из модулей, просто проверив их НОД (всего модулей должно быть $e$ штук).
+
+То есть если все абоненты зашифровали одно и то же сообщение (например, приветствие или синхронизационное сообщение) на своих параметрах, то мы можем это сообщение восстановить, даже не имея закрытую экспоненту.
+
+После составления системы:
+
+$$\begin{cases} C_1 = M^e\ mod N_1 \\ C_2 = M^e\ mod N_2 \\ ... \\ C_e = M^e\ mod N_e \end{cases}$$
+
+при помощи \href{https://yatb.kksctf.ru/}{китайской теоремы об остатках} мы находим решение системы сравнений:
+
+$$C' = M^e\ mod\ N_1N_2...N_e$$
+
+Так как система RSA предполагает, что $M < N_i$ для любого $i$, то $M^e << N_1N_2...N_e$.  В силу этих обстоятельств мы можем извлечь обычный корень $e$-ой степени из $M^e$, получив при этом исходное сообщение.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/hastad.sage}
+
+\textbf{Источник:}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}
+
+\href{https://ctf-wiki.github.io/ctf-wiki/crypto/asymmetric/rsa/rsa_coppersmith_attack-zh/}{https://ctf-wiki.github.io/ctf-wiki/crypto/asymmetric/rsa/rsa\_coppersmith\_attack-zh/}
+
+\end{document}

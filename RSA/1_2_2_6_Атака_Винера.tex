@@ -1,0 +1,123 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Маленькая экспонента d: метод Винера}
+
+Атака использует \href{https://yatb.kksctf.ru/}{метод непрерывной дроби}, чтобы взломать систему при малом значении закрытой экспоненты $d$. Винер доказал, что злоумышленник может эффективно найти $d$, когда $d<{\frac {1}{3}}N^{\frac {1}{4}}$.\\
+
+\textbf{Как работает атака Винера:}\\
+
+Поскольку
+
+$$ed=1\ (mod\ \phi(N)),$$
+
+то существует целое $K'$ такое, что:
+
+$$ed=K'\times \phi(N)+1.$$
+
+Стоит определить $G=\text{НОД}(p-1,q-1)$ и подставить в предыдущее уравнение:
+
+$$ed={\frac {K}{G}}(p-1)(q-1)+1.$$
+
+Если обозначить за $k={\frac {K}{\text{НОД}(K,G)}}$ и $g={\frac {G}{\text{НОД}(K,G)}}$, то подстановка в предыдущее уравнение даст:
+
+$$ed={\frac {k}{g}}(p-1)(q-1)+1.$$
+
+Разделив обе части уравнения на $dpq$, выходит что:
+
+$$\delta ={\frac {p+q-1-{\frac {g}{k}}}{pq}}.$$
+
+В итоге ${\frac {e}{pq}}$ немного меньше, чем ${\frac {k}{dg}}$, причём первая дробь состоит целиком из публичной информации. Тем не менее, метод проверки такого предположения всё ещё необходим. Принимая во внимание, что $ed>pq$, последнее уравнение может быть записано как:
+
+$$edg=k(p-1)(q-1)+g.$$
+
+Используя простые алгебраические операции и тождества, можно установить точность такого предположения.\\
+
+\textbf{Описание алгоритма атаки:}
+
+Рассматривается открытый RSA-ключ $(e,N)$, по которому необходимо определить закрытую экспоненту $d$. Если известно, что $d<{\frac {1}{3}}N^{\frac {1}{4}}$, то это возможно сделать по следующему алгоритму:
+
+\begin{enumerate}
+	\item Разложить дробь ${\frac {e}{N}}$ в непрерывную дробь$[a_{1},a_{2}...]$.
+	
+	\item Для непрерывной дроби $[a_{1},a_{2}...]$ найти множество всех возможных подходящих дробей ${\frac {k_{n}}{d_{n}}}$.
+	
+	\item Исследовать подходящую дробь ${\frac {k_{n}}{d_{n}}}$:
+	
+	\subitem $*$ Определить возможное значение $\varphi (N)$, вычислив $f_{n}={\frac {ed_{n}-1}{k_{n}}}$.
+	\subitem $*$ Решив уравнение $x^{2}-((N-f_{n})+1)x+N=0$, получить пару корней $(p_{n},q_{n})$.
+	
+	\item Если для пары корней $(p_{n},q_{n})$ выполняется равенство $N=p_{n}\cdot q_{n}$, то закрытая экспонента найдена $d=d_{n}$.
+	
+	Если условие не выполняется или не удалось найти пару корней $(p_{n},q_{n})$, то необходимо исследовать следующую подходящую дробь ${\frac {k_{n+1}}{d_{n+1}}}$, вернувшись к шагу 3.
+\end{enumerate}
+
+\textbf{Пример работы алгоритма}\\
+
+Два данных примера наглядно продемонстрируют нахождение закрытой экспоненты $d$, если известен открытый ключ RSA $(e,N)$.
+
+Для открытого ключа RSA $(e,N)=(1073780833,1220275921)$:
+
+\textbf{Таблица: нахождение закрытой экспоненты $d$}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{6}{|l|}{$e/N = [0, 1, 7, 3, 31, 5, 2, 12, 1, 28, 13, 2, 1, 2, 3]$}                                                                                     \\ \hline
+		\textit{\textbf{$n$}} & \textit{\textbf{$k_n / d_n$}} & \textit{\textbf{$phi_n$}} & \textit{\textbf{$p_n$}} & \textit{\textbf{$q_n$}} & \textit{\textbf{$p_n q_n$}} \\ \hline
+		0                     & 0/1                           & -                         & -                       & -                       & -                           \\ \hline
+		1                     & 1/1                           & 1073780832                & -                       & -                       & -                           \\ \hline
+		2                     & 7/8                           & 1227178094                & -                       & -                       & -                           \\ \hline
+		3                     & 22/25                         & 1220205492                & 30763                   & 39667                   & 1220275921                  \\ \hline
+	\end{tabular}
+\end{table}
+
+Получается, что $d=25$. В этом примере можно заметить, что условие малости выполняется $d<{\frac {1}{3}}N^{\frac {1}{4}}\approx 62.30074...$.
+
+Для открытого ключа RSA $(e,N)=(1779399043,2796304957)$:
+
+\textbf{Таблица: нахождение закрытой экспоненты $d$} 
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{6}{|l|}{$e/N = [0, 1, 1, 1, 2, 1, 340, 2, 1, 1, 3, 2, 3, 1, 21, 188]$}                                                                                 \\ \hline
+		\textit{\textbf{$n$}} & \textit{\textbf{$k_n / d_n$}} & \textit{\textbf{$phi_n$}} & \textit{\textbf{$p_n$}} & \textit{\textbf{$q_n$}} & \textit{\textbf{$p_n q_n$}} \\ \hline
+		0                     & 0/1                           & -                         & -                       & -                       & -                           \\ \hline
+		1                     & 1/1                           & 1779399042                & -                       & -                       & -                           \\ \hline
+		2                     & 1/2                           & 3558798085                & -                       & -                       & -                           \\ \hline
+		3                     & 2/3                           & 2669098564                & -                       & -                       & -                           \\ \hline
+		4                     & 5/8                           & 2847038468                & -                       & -                       & -                           \\ \hline
+		5                     & 7/11                          & 2796198496                & 47129                   & 59333                   & 2796304957                  \\ \hline
+	\end{tabular}
+\end{table}
+
+Получается, что $d=11$. В этом примере так же можно заметить, что условие малости выполняется $d<{\frac {1}{3}}N^{\frac {1}{4}}\approx 76.65224...$.
+
+\textbf{Сложность алгоритма}
+
+Сложность алгоритма определяется количеством подходящих дробей для непрерывной дроби числа ${\frac {e}{N}}$, что есть величина порядка $O(log(n))$. То есть число $d$ восстанавливается за линейное время от длины ключа.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/wiener.sage}
+
+\textbf{Источник:}
+
+\href{https://ru.wikipedia.org/wiki/%D0%90%D1%82%D0%B0%D0%BA%D0%B0_%D0%92%D0%B8%D0%BD%D0%B5%D1%80%D0%B0}{https://ru.wikipedia.org/wiki/Атака\_Винера}
+	
+\href{https://github.com/pablocelayes/rsa-wiener-attack/blob/master/RSAwienerHacker.py}{https://github.com/pablocelayes/rsa-wiener-attack/blob/master/RSAwienerHacker.py}
+	
+\href{https://doc.sagemath.org/html/en/reference/diophantine_approximation/sage/rings/continued_fraction.html?highlight=continued_fraction#module-sage.rings.continued_fraction}{https://doc.sagemath.org/...\#module-sage.rings.continued\_fraction}
+
+\end{document}

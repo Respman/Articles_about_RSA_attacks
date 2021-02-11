@@ -1,0 +1,280 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Алгоритм Ленстры — Ленстры — Ловаса приведения базиса решетки}
+
+Алгоритм Ленстры — Ленстры — Ловаса (ЛЛЛ-алгоритм, LLL-алгоритм) — алгоритм редукции базиса решётки, разработанный Арьеном Ленстрой, Хендриком Ленстрой и Ласло Ловасом в 1982 году. За полиномиальное время алгоритм преобразует базис на решётке (подгруппе $\mathbb{R}^{n}$) в кратчайший почти ортогональный базис на этой же решётке. По состоянию на 2019 год алгоритм Ленстры — Ленстры — Ловаса является одним из самых эффективных для вычисления редуцированного базиса в решётках больших размерностей. Он актуален прежде всего в задачах, сводящихся к поиску кратчайшего вектора решётки. 
+
+В чем суть этого алгоритма - у нас есть базисные векторы (в двумерном простарнстве - это два вектора), линейные комбинации с целыми коэффициентами которых образуют множество других векторов - это множество называется решеткой. LLL-алгоритм позволяет найти другой базис для этой же решетки, но с более 'короткими' базисными векторами (но эти вектора также пренадлежат данной решетке, поэтому у них значения на позициях тоже будут целыми, но просто очень маленькими).\\
+
+\textbf{Редукция базиса}
+
+Решётка в евклидовом пространстве — это подгруппа группы $(\mathbb {R} ^{n},+)$, порожденная $d$ линейно независимыми векторами из $\mathbb{R}^{n}$, называемыми базисом решётки. Любой вектор решётки может быть представлен целочисленной линейной комбинацией базисных векторов. Но базис решётки определяется неоднозначно.
+
+Редукция базиса заключается в приведении базиса решётки к особому виду, удовлетворяющему некоторым свойствам. Редуцированный базис должен быть, по возможности, наиболее коротким среди всех базисов решётки и близким к ортогональному (что выражается в том, что итоговые коэффициенты Грама — Шмидта должны быть не больше $1/2$).
+
+
+\begin{tikzpicture}[scale=.55]
+	\node [above] at (5,10) {\textbf{случайный базис}};
+	\node [above] at (18,10) {\textbf{сокращенный базис}};
+	\draw [lightgray] [<->] (0,5) -- (10,5);
+	\draw [lightgray] [<->] (5,10) -- (5,0);
+	
+	\draw [fill,purple,opacity=.4] (9,1) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (7,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (8,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (9,3) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (5,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (6,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (7,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (8,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (9,5) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (3,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (4,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (5,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (6,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (7,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (8,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (9,7) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (1,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (2,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (3,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (4,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (5,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (6,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (7,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (8,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (9,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (1,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (2,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (3,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (4,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (5,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (6,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (7,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (1,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (2,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (3,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (4,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (5,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (1,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (2,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (3,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (1,9) circle [radius=0.1];
+	
+	%
+	\draw [thick,black] [->] (11,5) -- (12,5);
+	\node [above] at (11.5,5) {$_{LLL}$};
+	%
+	
+	\draw [lightgray] [<->] (13,5) -- (23,5);
+	\draw [lightgray] [<->] (18,10) -- (18,0);
+	
+	\draw [fill,purple,opacity=.4] (22,1) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (20,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (21,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (22,3) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (18,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (19,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (20,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (21,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (22,5) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (16,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (17,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (18,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (19,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (20,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (21,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (22,7) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (14,1) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (15,2) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (16,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (17,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (18,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (19,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (20,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (21,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (22,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (14,3) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (15,4) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (16,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (17,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (18,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (19,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (20,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (14,5) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (15,6) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (16,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (17,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (18,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (14,7) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (15,8) circle [radius=0.1];
+	\draw [fill,purple,opacity=.4] (16,9) circle [radius=0.1];
+	
+	\draw [fill,purple,opacity=.4] (14,9) circle [radius=0.1];
+	
+	% vectors
+	\draw [thick,purple] [->] (5,5) -- (7, 9);
+	\draw [thick,purple] [->] (5,5) -- (6, 8);
+	
+	\draw [thick,purple] [->] (18,5) -- (19, 4);
+	\draw [thick,purple] [->] (18,5) -- (19, 6);
+\end{tikzpicture}\\
+
+
+Пусть в результате преобразования базиса B = $\mathbf {B} =\{\mathbf {b} _{1},\mathbf {b} _{2},\dots ,\mathbf {b} _{d}\}$ с помощью процесса Грама ― Шмидта получен базис $\mathbf {B} ^{*}=\{\mathbf {b} _{1}^{*},\mathbf {b} _{2}^{*},\dots ,\mathbf {b} _{d}^{*}\}$, с коэффициентами Грама — Шмидта, определяемыми следующим образом:
+
+\begin{center}
+	$\mu _{i,j}={\frac {\langle \mathbf {b} _{i},\mathbf {b} _{j}^{*}\rangle }{\langle \mathbf {b} _{j}^{*},\mathbf {b} _{j}^{*}\rangle }}$, для всех $j,i$ таких, что $1\leqslant j<i\leqslant d$.
+\end{center}
+
+Тогда (упорядоченный) базис $\mathbf {B}$ называется $\delta$ - LLL-редуцированным базисом (где параметр $\delta$ находится в промежутке $(0.25,1]$), если он удовлетворяет следующим свойствам:
+
+\begin{enumerate}
+	\item Для всех $i,j$ таких, что $1\leqslant j<i\leqslant d\colon \left|\mu _{i,j}\right|\leqslant 0{,}5$. (условие уменьшения размера)
+	\item Для $k=1,2,\dots ,d$ имеет место: $(\delta -\mu _{k,k-1}^{2})\|\mathbf {b}_{k-1}^{*}\|^{2}\leqslant \|\mathbf {b} _{k}^{*}\|^{2}$. (условие Ловаса)
+	
+\end{enumerate}
+
+
+Здесь $\|\mathbf {b} \|$ — норма вектора, $\langle \mathbf {b} _{i},\mathbf {b} _{j}^{*}\rangle$ — cкалярное произведение векторов.
+
+Изначально Ленстра, Ленстра и Ловас в своей статье продемонстрировали работу алгоритма для параметра $\delta ={\frac {3}{4}}$. Несмотря на то что алгоритм остаётся корректным и для $\delta =1$, его работа за полиномиальное время гарантируется только для $\delta$ в промежутке $(0.25,1)$. \\
+
+\textbf{Алгоритм}
+
+\textbf{Входные данные:} базис решётки $\mathbf {b} _{1},\mathbf {b} _{2},\dots ,\mathbf {b} _{d}\in \mathbb{R}^{d}$ (состоит из линейно независимых векторов),
+параметр $\delta$ cо значением ${\frac {1}{4}}<\delta <1$, чаще всего $\delta ={\frac {3}{4}}$ (выбор параметра зависит от конкретной задачи).
+
+\textbf{Последовательность действий:}
+
+\begin{enumerate}
+	\item Сначала создаётся копия исходного базиса, которая ортогонализуется для того, чтобы по ходу алгоритма текущий базис сравнивался с полученной копией на предмет ортогональности $\mathbf {b} _{1}^{*},\mathbf {b} _{2}^{*},\dots ,\mathbf {b} _{d}^{*})$.
+	
+	\item Если какой-либо коэффициент Грама — Шмидта $\vert \mu _{k,j}\vert$ (с $j<k$) по модулю больше $0{,}5$, то проекция одного из векторов $\mathbf {b} _{k}$ текущего базиса на вектор $\mathbf {b} _{j}^{*}$ ортогонализованного базиса с другим номером составляет больше половины $\mathbf {b} _{j}^{*}$. Это говорит о том, что необходимо вычесть из вектора $\mathbf {b} _{k}$ вектор ${\mathbf {b}}_{j}$, домноженный на округлённый $\vert \mu _{k,j}\vert$ (округление нужно, так как вектор решётки остаётся вектором этой же решётки только при умножении на целое число, что следует из её определения). Тогда $\vert \mu _{k,j}\vert$ станет меньше $0{,}5$, так как теперь проекция $\mathbf {b} _{k}$ на $\mathbf {b} _{j}^{*}$ будет меньше половины $\mathbf {b} _{j}^{*}$. Таким образом производится проверка соответствию 1-му условию из определения LLL-редуцированного базиса.
+	
+	\item Пересчитывается $\mu _{k,j}$ для $j<k$.
+	
+	\item Для $\mathbf {b} _{k}$ проверяется 2-е условие, введённое авторами алгоритма как определение LLL-редуцированного базиса. Если условие не выполнено, то индексы проверяемых векторов меняются местами. И условие проверяется снова для того же вектора (уже с новым индексом).
+	Пересчитываются $\mathbf {b} _{k}^{*},\mathbf {b} _{k-1}^{*},\langle \mathbf {b} _{k}^{*},\mathbf {b} _{k}^{*}\rangle ,\langle \mathbf {b} _{k-1}^{*},\mathbf {b} _{k-1}^{*}\rangle$ для $k>1$ и $\mu _{k-1,j},\mu _{k,j}$ для $j<k$
+	
+	\item Если остался какой-либо $\mu _{k,j}$, по модулю превышающий $0{,}5$ (уже с другим $k$), то надо вернуться к пункту 2.
+	
+	\item Когда все условия проверены и сделаны изменения, алгоритм завершает работу.
+	
+\end{enumerate}
+
+В алгоритме $\lfloor \mu _{k,j}\rceil$ — округление по правилам математики. Процесс алгоритма, описанный на псевдокоде:\\
+
+
+ortho $:=\mathrm {gramSchmidt} (\{\mathbf {b} _{1},\dots ,\mathbf {b} _{d}\})=\{\mathbf {b} _{1}^{*},\dots ,\mathbf {b} _{d}^{*}\}$ (выполнить процесс Грама - Шмидта без нормировки);
+
+\textbf{определить} $\mu _{k,j}:={\frac {\langle \mathbf {b} _{k},\mathbf {b} _{j}^{*}\rangle }{\langle \mathbf {b} _{j}^{*},\mathbf {b} _{j}^{*}\rangle }}$, всегда подразумевая наиболее актуальные значения $\mathbf {b} _{k},\mathbf {b} _{j}^{*}$;
+
+\textbf{присвоить} $k=2$
+
+\textbf{пока} $k\leqslant d$:
+
+\qquad \textbf{для} $j$ \textbf{от} $k-1$ \textbf{до} $0$:
+
+\qquad \qquad \textbf{если} $|\mu _{k,j}|>{\frac {1}{2}}$, \textbf{то}:
+
+\qquad \qquad\qquad $\mathbf {b} _{k}=\mathbf {b} _{k}-\lfloor \mu _{k,j}\rceil \mathbf {b} _{j}$;
+
+\qquad \qquad\qquad Обновить значения $|\mu _{k,j}|$ для $j<k$;
+
+\qquad \qquad \textbf{конец условия;}
+
+\qquad \textbf{конец цикла;}
+
+\qquad \textbf{если} $(\delta -\mu _{k,k-1}^{2})\|\mathbf {b} _{k-1}^{*}\|^{2}\leqslant \|\mathbf {b}_{k}^{*}\|^{2}$, \textbf{то}:
+
+\qquad \qquad $k=k+1$
+
+\qquad \textbf{иначе:}
+
+\qquad \qquad поменять $\mathbf {b} _{k}$ и $\mathbf {b} _{k-1}$ местами;
+
+\qquad \qquad Обновить значения $\mathbf {b} _{k}^{*},\mathbf {b} _{k-1}^{*},\langle \mathbf {b} _{k}^{*},\mathbf {b} _{k}^{*}\rangle ,\langle \mathbf {b} _{k-1}^{*},\mathbf {b} _{k-1}^{*}\rangle$ для $k>1$; $\mu _{k-1,j},\mu _{k,j}$ для $j<k$;
+
+\qquad \qquad $k=\max(k-1,1)$;
+
+\qquad \textbf{конец условия;}
+
+\textbf{конец цикла.}
+
+Выходные данные: редуцированный базис: $\mathbf {b} _{1},\mathbf {b} _{2},\dots ,\mathbf {b} _{d}$.\\ 
+
+\textbf{Пример}
+
+Пусть базис решётки $\mathbf {b} _{1},\mathbf {b} _{2},\mathbf {b} _{3}\in \mathbb {Z} ^{3}$ (как подгруппа $(\mathbb {R} ^{n},+)$), задан столбцами матрицы:
+
+$${\begin{bmatrix}1&-1&3\\1&0&5\\1&2&6\end{bmatrix}}$$
+
+По ходу алгоритма получается следующее:
+
+\begin{enumerate}
+	\item Процесс ортогонализации Грама-Шмидта
+	
+	\subitem $b_{1}^{*}=b_{1}={\begin{bmatrix}1\\1\\1\end{bmatrix}},B_{1}=\langle b_{1}^{*},b_{1}^{*}\rangle =3$
+	
+	\subitem $\mu _{2,1}={\frac {\langle b_{2},b_{1}^{*}\rangle }{B_{1}}}={\frac {1}{3}}\left(<{\frac {1}{2}}\right)$, $b_{2}^{*}=b_{2}-\mu _{2,1}b_{1}^{*}={\begin{bmatrix}{\frac {-4}{3}}\\{\frac {-1}{3}}\\{\frac {5}{3}}\end{bmatrix}}$ и $B_{2}=\langle b_{2}^{*},b_{2}^{*}\rangle ={\frac {14}{3}}.$
+	
+	\subitem $\mu _{3,1}={\frac {14}{3}}(>{\frac {1}{2}})$, поэтому $b_{3}^{*}={\begin{bmatrix}{\frac {-5}{3}}\\{\frac {1}{3}}\\{\frac {4}{3}}\end{bmatrix}}$ и $\mu _{3,2}={\frac {\langle b_{3},b_{2}^{*}\rangle }{B_{2}}}={\frac {13}{14}}\left(>{\frac {1}{2}}\right)$, тогда $b_{3}^{*}={\begin{bmatrix}{\frac {-6}{14}}\\{\frac {9}{14}}\\{\frac {-3}{14}}\end{bmatrix}}$ и $B_{3}={\frac {9}{14}}$
+	
+	\item При $k=2$ имеем $\mu _{2,1}<{\frac {1}{2}}$ и $(\delta -\mu _{2,1}^{2})\|\mathbf {b} _{1}^{*}\|^{2}\leqslant \|\mathbf {b} _{2}^{*}\|^{2}$, поэтому переходим к следующему шагу.
+	
+	\item При $k=3$ имеем:
+	
+	\subitem $\lfloor \mu _{3,2}\rceil =1$, значит $b_{3}=b_{3}-1\cdot b_{2}={\begin{bmatrix}3\\5\\6\end{bmatrix}}-{\begin{bmatrix}-1\\0\\2\end{bmatrix}}={\begin{bmatrix}4\\5\\4\end{bmatrix}}$, теперь $\mu _{3,2}={\frac {13}{14}}-1=-{\frac {1}{14}},\mu _{3,1}={\frac {13}{3}}$
+	
+	\subitem $\lfloor \mu _{3,1}\rceil =4$, значит $b_{3}=b_{3}-4\cdot b_{1}={\begin{bmatrix}4\\5\\4\end{bmatrix}}-{\begin{bmatrix}4\\4\\4\end{bmatrix}}={\begin{bmatrix}0\\1\\0\end{bmatrix}}$, теперь $\mu _{3,2}=-{\frac {1}{14}},\mu _{3,1}={\frac {1}{3}}$
+	
+	\subitem $(\delta -\mu _{3,2}^{2})\|\mathbf {b} _{2}^{*}\|^{2}>\|\mathbf {b} _{3}^{*}\|^{2}$, поэтому $b_{3}$ и $b_{2}$ меняются местами.
+	
+	\item Теперь возвращаемся к шагу 1, при этом промежуточная матрица $(\mathbf {b} _{1},\mathbf {b} _{2},\mathbf {b} _{3})$ имеет вид ${\begin{bmatrix}1&0&-1\\1&1&0\\1&0&2\end{bmatrix}}$
+	
+\end{enumerate}
+
+Выходные данные: базис, редуцированный методом Ленстры - Ленстры - Ловаса:
+
+$${\begin{bmatrix}0&1&-1\\1&0&0\\0&1&2\end{bmatrix}}$$
+
+\textbf{Источники информации про LLL-алгоритм:}
+
+\href{https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%9B%D0%B5%D0%BD%D1%81%D1%82%D1%80%D1%8B_%E2%80%94_%D0%9B%D0%B5%D0%BD%D1%81%D1%82%D1%80%D1%8B_%E2%80%94_%D0%9B%D0%BE%D0%B2%D0%B0%D1%81%D0%B0}{https://ru.wikipedia.org/wiki/Алгоритм\_Ленстры\_-\_Ленстры\_-\_Ловаса}
+	
+\href{http://www.uic.unn.ru:8103/~zny/compalg/Materials/lll_lecture.pdf}{http://www.uic.unn.ru:8103/~zny/compalg/Materials/lll\_lecture.pdf}
+	
+\href{https://www.youtube.com/watch?v=FVFw_qb1ZkY}{https://www.youtube.com/watch?v=FVFw\_qb1ZkY}
+	
+\href{https://github.com/mimoo/RSA-and-LLL-attacks}{https://github.com/mimoo/RSA-and-LLL-attacks}
+	
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}\\
+	
+\end{document}

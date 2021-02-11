@@ -1,0 +1,72 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Факторизация модуля $N$ по известным верхним битам $p$ и $q$}
+
+Здесь мы воспользуемся \href{https://yatb.kksctf.ru/}{алгоритмом Копперсмита для двух переменных}. Мы не можем использовать тот же алгоритм, что и в атаке Бонеха-Дюрфи, потому что он оптимизирован конкретно под неё (под тот многочлен, который там используется).
+
+Данную атаку можно свести к решению уравнения 
+
+$$f(x,y)=(p_0+x)(q_0+y)\equiv 0\ (mod\ N),$$
+
+$d=deg(f(x))=2$, при этом $|x_0|<N^{\dfrac{1}{7}}$, $|y_0|<N^{\dfrac{1}{7}}$ - эти границы (157 бит) были найдены для модуля длинной 1024 бит. Но при значениях такого порядка могут появляться случаи $(x_0,y_0)$, в которых алгоритм не выдаст решение (так как значения очень близки к допустимым границам). Неравенство будет выполняться при $m=1$. Тройки $(i,j,k)$ будем брать из следующего множества:
+
+$$(i,j,k) \in S = \left\{ (i,j,k) \in \mathbb{Z}^3 |\ i+j+2k \leq 2\text{ и }(i,j,k \geq 0)\text{ и }(i<1\text{ или }j<1)\right\}$$
+
+При подстановке наших параметров у нас получаются тройки 
+
+$$(0,0,0),\ (0,0,1),\ (0,1,0),\ (1,0,0)$$
+
+После редукции два первых получившихся из матрицы полинома нам подходят (если прочитать исходную статью, то как раз верное неравенство для $m$ нам это и гарантирует). При взаимной подстановке мы получаем уравнение второй степени с двумя корнями - $x_0$ и $y_0$.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/upper_bit_p_and_q.sage}
+
+\textbf{Источник информации про восстановление  $p$ и $q$ по известной верхней половине бит каждого из них:}\\
+
+\href{http://theory.stanford.edu/~gdurf/durfee-thesis-phd.pdf}{http://theory.stanford.edu/~gdurf/durfee-thesis-phd.pdf} - начиная с 25 стр
+
+\href{https://github.com/KonstT-math/Durfee-Boneh_RSA/blob/master/boneh_durfee.sage}{https://github.com/KonstT-math/Durfee-Boneh\_RSA/blob/master/boneh\_durfee.sage}
+
+\href{https://www.di.ens.fr/~fouque/ens-rennes/coppersmith.pdf}{D.Coppersmith.Small solutions to polynomial equations, and low exponent RSA vulnerabilities. Journal of Cryptology, 10:233-260, 1997.}
+
+Don Coppersmith. 1996. Finding a Small Root of a Bivariate Integer Equation;Factoring with High Bits Known. InProceedings of EUROCRYPT’96. Springer-Verlag, 178–189
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+\href{https://www.researchgate.net/publication/220334831_An_Algorithm_for_Finding_Small_Roots_of_Multivariate_Polynomials_over_the_Integers}{https://www.researchgate.net/...\_over\_the\_Integers}
+
+D. Coppersmith: “Small solutions to polynomial equations and low exponent RSA vulnerabilities”. J. Cryptology 10 (4), 1997, 233–260.
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+\section{Факторизация модуля $N$ по известным нижним битам $p$ и $q$}
+
+Тут подход такой же, что и в \href{https://yatb.kksctf.ru/}{алгоритме для восстановления множителей по верхним битам $p$ и $q$}, поэтому столь же подробно расписывать его не будем. Оценки там останутся такими же, а поменяется только уравнение. Оно примет следующий вид:
+
+$$f(x,y)=(p_0+x\cdot2^k)(q_0+y\cdot2^k)\equiv 0\ (mod\ N)$$
+
+Опять же, нельзя забывать про то, что мы ищем недостающие биты почти на границе возможностей алгоритма - поэтому для некоторых отдельных примеров решение может быть и не найдено.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/lower_bit_p_and_q.sage}
+
+\textbf{Источник информации про восстановление  $p$ и $q$ по известной нижней половине бит каждого из них:}
+
+\href{http://theory.stanford.edu/~gdurf/durfee-thesis-phd.pdf}{http://theory.stanford.edu/~gdurf/durfee-thesis-phd.pdf} - начиная с 25 стр
+
+\href{https://github.com/KonstT-math/Durfee-Boneh_RSA/blob/master/boneh_durfee.sage}{https://github.com/KonstT-math/Durfee-Boneh\_RSA/blob/master/boneh\_durfee.sage}
+
+\end{document}

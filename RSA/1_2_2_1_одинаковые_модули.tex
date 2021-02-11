@@ -1,0 +1,68 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Одинаковые модули N для разных персон}
+
+Если при использовании RSA разными пользователями одной системы у всех одинаковый $N$, но разные пары $<e,d>$, то любой из пользователей сможет разложить модуль $N$, используя свою пару ключей $<e,d>$, после чего по чужому открытому ключу $\widetilde{e}$ он сможет восстановить  $\widetilde{d}$. Чтобы разложить модуль $N$ с помощью своих $<e,d>$, нужно действовать следующим образом:
+
+Итак, мы знаем, что 
+
+$$ed \equiv 1\ (mod\ \phi(N))$$
+
+Из этого мы можем сделать вывод, что 
+
+$$ed - 1 = k\ \text{(при этом }\phi(N)\ |\ k)$$
+
+Заметим, что $\phi(N)=(p-1)(q-1)$ - чётное, потому что $p$ и $q$ - нечётные (так как они простые, а значит нечётные), поэтому $(p-1)$ и $(q-1)$ - чётные. Значит и $k$ - чётное, поэтому мы можем представить 
+
+$$k=2^tr$$
+
+, где $r$ - нечётное, $t \geq 1$.
+
+По теореме Ферма 
+
+$$a^{\phi(N)} \equiv 1\ (mod\ N),$$
+
+при условии того, что НОД$(a,N)=1$, то есть они взаимно просты.
+
+
+По \href{https://yatb.kksctf.ru/}{Китайской теореме об остатках} мы можем доказать, что единица имеет четыре квадратных корня: два из них это $\pm1$, которые являются тривиальными и нас не интересуют, а также два корня $\pm x$, для которых будет верна система (по китайской теореме об остатках):
+
+$$\begin{cases} x \equiv 1\ (mod\ p) \\ x \equiv 1\ (mod\ q) \end{cases}$$
+
+, а значит НОД$(x-1,N)$ даст либо $p$, либо $q$, и в результате мы получим разложение модуля $N$.
+
+То есть мы выбираем случайное $a$ такое, что НОД$(a,N)=1$, и проверяем для всех $i \in [1,t]$ условия 
+
+\begin{center}
+	$a^{2^ir} \equiv 1\ (mod\ N)$\\
+	и\\
+	$a^{2^{i-1}r} \not\equiv 1\ (mod\ N)$
+\end{center}
+
+Если для какого-то $i$ оба этих условия выполняются, то мы вычисляем НОД$(a^{2^{i-1}r}-1,N)=p$ и $q = N/p$. Если же мы не нашли такое $i$, вы берём другое $a$ и пробуем ещё раз. Так как нам подходят два корня из единицы из четырёх возможных, то вероятность выбрать хороший $a$ составляет $50\%$.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/factor_modul.sage}
+
+
+\textbf{Источник:}
+
+\href{http://cacr.uwaterloo.ca/hac/about/chap8.pdf}{http://cacr.uwaterloo.ca/hac/about/chap8.pdf}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf} - страница 3, Fact 1 proof
+
+\href{https://github.com/ius/rsatool/blob/master/rsatool.py}{https://github.com/ius/rsatool/blob/master/rsatool.py}
+
+\end{document}

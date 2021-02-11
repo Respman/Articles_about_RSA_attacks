@@ -1,0 +1,27 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Алгоритм быстрого возведения в степень}
+
+Мы можем представить экспоненту $d=d_nd_{n-1}...d_0$ как последовательность её бит. После чего мы можем применить к ней следующий алгоритм: 
+
+Установим $z=M$ и $C=1$. Теперь для всех $i=0,...,n$ выполним следующие 2 пункта:
+
+\begin{enumerate}
+	\item Если $d_i = 1$, то $C=C \cdot z\ mod\ N$
+	\item $z = z^2\ mod\ N$
+\end{enumerate}
+
+После выполнения алгоритма $C= M^d\ mod\ N$.\\
+	
+\end{document}

@@ -1,0 +1,68 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Деление многочленов столбиком}
+
+В алгебре деление многочленов столбиком (или уголком) — алгоритм деления многочлена $f(x)$ на многочлен $g(x)$, степень которого меньше или равна степени многочлена $f(x)$. Алгоритм представляет собой обобщённую форму деления чисел столбиком, легко реализуемую вручную.
+
+Для любых многочленов $f(x)$ и $g(x)$, $g(x) \ne 0$, существуют единственные многочлены $q(x)$ и $r(x)$, такие что
+
+$$\frac{f(x)}{g(x)}=q(x) + \frac{r(x)}{g(x)},$$
+
+причем $r(x)$ имеет более низкую степень, чем $g(x)$.
+
+Целью алгоритма деления многочленов в столбик является нахождение частного $q(x)$ и остатка $r(x)$ для заданных делимого $f(x)$ и ненулевого делителя $g(x)$.\\
+
+\textbf{Пример}
+
+Покажем, что
+
+$$\frac{x^3 - 12x^2 - 42}{x-3} = x^2 - 9x - 27 - \frac{123}{x-3}$$
+
+Частное и остаток от деления могут быть найдены в ходе выполнения следующих шагов:
+
+\begin{enumerate}
+	
+	\item Делим первый элемент делимого на старший элемент делителя, помещаем результат под чертой $\left( x^3 / x = x^2 \right)$.
+	
+	$$\begin{matrix} x^3 - 12x^2 + 0x - 42 \underline{\vert x-3}\\ \qquad\qquad\qquad\quad\; \vert x^2\\ \end{matrix}$$ 
+	
+	\item Умножаем делитель на полученный выше результат деления (на первый элемент частного). Записываем результат под первыми двумя элементами делимого $\left( x^2 \cdot \left( x-3 \right) = x^3 - 3x^2 \right)$.
+	
+	$$\begin{matrix} x^3 - 12x^2 + 0x - 42 \underline{\vert x-3}\\ x^3 \;\; - 3x^2 \qquad\qquad\;\; \vert x^2 \quad\; \\ \end{matrix}$$
+	
+	\item Вычитаем полученный после умножения многочлен из делимого, записываем результат под чертой $\left( x^3 - 12x^2 + 0x - 42 - \left( x^3 - 3x^2 \right) = - 9x^2 + 0x - 42 \right)$.
+	
+	$$\begin{matrix} x^3 - 12x^2 + 0x - 42 \underline{\vert x-3}\\ \underline{x^3 \;\; - 3x^2 \qquad\qquad\;\;} \vert x^2 \quad\; \\ - 9x^2 + 0x - 42 \;\; \end{matrix}$$ 
+	
+	\item Повторяем предыдущие 3 шага, используя в качестве делимого многочлен, записанный под чертой.
+	
+	$$\begin{matrix} x^3 - 12x^2 + \;\; 0x - 42 \vert x-3 \quad \\ \underline{x^3 \;\; - 3x^2 \qquad\qquad\;\;\;\;} \overline{\vert x^2 - 9x} \\ - 9x^2 \;\; + 0x - 42 \quad\;\; \\ \underline{- 9x^2 + 27x \qquad\;} \quad\;\; \\ \quad\; - 27x - 42 \end{matrix}$$
+	
+	\item Повторяем шаг 4.
+	
+	$$\begin{matrix}x^{3}-12x^{2}+\;\;0x-42\vert x-3\qquad \quad \;\\{\underline {x^{3}\;\;-3x^{2}\qquad \qquad \;\;\;\;}}{\overline {\vert x^{2}-9x-27}}\\-9x^{2}\;\;+0x-42\qquad \quad \;\;\;\\{\underline {-9x^{2}+27x\qquad \;}}\qquad \quad \;\;\;\\-27x-42\quad \\{\underline {-27x+81}}\quad \\\quad \;-123\end{matrix}$$
+	
+	\item Конец алгоритма.
+	
+	Таким образом, многочлен $r(x) = - 123$ является остатком от деления. 
+	
+\end{enumerate}
+
+Также не стоит забывать, что если коэффициенты многочлена принадлежат конечному полю, то действие 'вычитание числа' меняется на 'сложение с числом, обратным данному (результат сложения также берётся по модулю)'.
+
+\textbf{Источник:}
+
+\href{https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE%D1%87%D0%BB%D0%B5%D0%BD%D0%BE%D0%B2_%D1%81%D1%82%D0%BE%D0%BB%D0%B1%D0%B8%D0%BA%D0%BE%D0%BC}{https://ru.wikipedia.org/wiki/Деление\_многочленов\_столбиком}
+	
+\end{document}

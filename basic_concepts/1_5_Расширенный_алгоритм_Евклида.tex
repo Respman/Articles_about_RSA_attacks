@@ -1,0 +1,57 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Расширенный алгоритм Евклида}
+
+В то время как 'обычный' алгоритм Евклида просто находит наибольший общий делитель двух чисел $a$ и $b$, расширенный алгоритм Евклида находит помимо НОД находит также коэффициенты $x$ и $y$ такие, что:
+
+$$a \cdot x + b \cdot y = \text{НОД } (a, b).$$
+
+То есть он находит коэффициенты, с помощью которых НОД двух чисел выражается через сами эти числа.\\
+
+\textbf{Алгоритм}
+
+Внести вычисление этих коэффициентов в алгоритм Евклида несложно, достаточно вывести формулы, по которым они меняются при переходе от пары $(a,b)$ к паре $((b\ mod\ a),a)$.
+
+Итак, пусть мы нашли решение $(x_1,y_1)$ задачи для новой пары $((b\ mod\ a),a)$:
+
+$$(b\ mod\ a) \cdot x_1 + a \cdot y_1 = g,$$
+
+и хотим получить решение $(x,y)$ для нашей пары $(a,b)$:
+
+$$a \cdot x + b \cdot y = g.$$
+
+Для этого преобразуем величину $b\ mod\ a$:
+
+$$(b\ mod\ a) = b - \left\lfloor \frac{b}{a} \right\rfloor * a.$$
+
+Подставим это в приведённое выше выражение с $x_1$ и $y_1$ и получим:
+
+$$g = (b\ mod\ a) \cdot x_1 + a \cdot y_1 = \left( b - \left\lfloor \frac{b}{a} \right\rfloor *a \right) * x_1 + a*y_1,$$
+
+и, выполняя перегруппировку слагаемых, получаем:
+
+$$g = b \cdot x_1 + a \cdot \left( y_1 - \left\lfloor \frac{b}{a} \right\rfloor *x_1 \right)$$
+
+Сравнивая это с исходным выражением над неизвестными x и y, получаем требуемые выражения:
+
+$$\begin{cases}
+	x = y_1 - \left\lfloor \frac{b}{a} \right\rfloor*x_1 \\
+	y=x_1
+\end{cases}$$
+
+\textbf{Источник:}
+
+\href{https://e-maxx.ru/algo/extended_euclid_algorithm}{https://e-maxx.ru/algo/extended\_euclid\_algorithm}
+	
+\end{document}

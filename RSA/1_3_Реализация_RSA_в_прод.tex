@@ -1,0 +1,34 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Библиотеки для реализации алгоритма RSA в продакшне}
+
+В данной статье мы старались приводить все реализации на языке sage, но если вам понадобится внедрять алгоритм RSA в ваше приложение, то лучше не писать костыль, а обратиться к готовым библиотекам: то есть либо использовать библиотеку pycryptodome для python3, либо можно воспользоваться утилитой openssl.
+
+Приведём примеры скриптов на языках python3 и bash-script с использованием библиотеки pycryptodome или утилиты openssl соответственно:\\
+
+\textbf{Python3-реализация c использованием \href{https://yatb.kksctf.ru/}{OAEP}:}\\
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/example_pycrypto.py}
+
+\textbf{Bash-реализация:}\\
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/openssl.sh}
+
+\textbf{Источник:}
+
+\href{https://www.youtube.com/watch?v=ibfb7\_-\_CGg\&list=PLLguubeCGWoaGFEDzduGmBhEgZ62p-Jqv\&index=6}{https://www.youtube.com/watch?...\&index=6}
+
+\href{http://secgroup.dais.unive.it/wp-content/uploads/2012/11/Practical-Padding-Oracle-Attacks-on-RSA.html}{http://secgroup.dais.unive.it/...Oracle-Attacks-on-RSA.html}
+
+\end{document}

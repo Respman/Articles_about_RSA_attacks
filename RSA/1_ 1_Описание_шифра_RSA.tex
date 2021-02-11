@@ -1,0 +1,99 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+
+\begin{document}
+
+\section{Описание шифра RSA}
+
+\subsection{Проблема}
+
+Проблематика, на которой строится шифр:
+
+Дано произведение $n$ двух простых чисел $p$ и $q$: $$n=p*q$$
+
+При достаточно большом $n$ мы не сможем быстро найти исходные $p$ и $q$.
+
+\subsection{Алгоритм}
+
+Процесс использования алгоритма RSA можно разделить на 2 этапа:
+
+\begin{enumerate}
+	\item Выработка ключей
+	\item Процесс шифрования и дешифрования
+\end{enumerate}
+
+\subsubsection{Выработка ключей}
+
+\begin{enumerate}
+	\item Выбираем два различных простых числа $p$ и $q$, находим $n=p*q$.
+	\item Находим \href{https://yatb.kksctf.ru/}{Функцию эйлера} $\phi(n)=(p-1)*(q-1)$.
+	\item Подбираем число $e$, которое будет взаимно просто с $\phi(n)$ (как вариант нахождения $e$ можно разложить $\phi(n)$ на простые множители и выбрать $e$ равное простому числу, не входящему в состав множителей $\phi(n)$).
+	\item С помощью \href{https://yatb.kksctf.ru/}{расширенного алгоритма Евклида} находим число $d$, \href{https://yatb.kksctf.ru/}{обратное числу} $e$  по модулю $\phi(n)$.
+	\item Таким образом мы получили 3 числа - $n$, $e$ и $d$; пара $(n,e)$ называется открытым (публичным) ключом и пересылается по сети оппоненту, а пара $(n,d)$ называется закрытым (приватным) ключом и должна содержаться в секрете.
+\end{enumerate}
+
+\subsubsection{Процесс шифрования и расшифрования}
+
+Шифрование открытого текста $m$ производится с использованием открытого ключа: $$c=m^e\ mod\ n$$
+
+То есть оппонент зашифровывает своё сообщение на вашем открытом ключе и пересылает его вам.
+
+Расшифрование зашифрованного текста $c$ проводится вами с использованием закрытого ключа по формуле: $$m=c^d\ mod\ n$$
+
+Работает такая схема из-за теоремы Эйлера.
+
+Теорема Эйлера: $a^{\phi(n)}\equiv 1 (mod\ n)$
+
+\begin{center}
+
+	$$(m^e\ mod\ n)^d\ mod\ n = m^{ed}\ mod\ n = \text{|по \href{https://yatb.kksctf.ru/}{китайской теореме об остатках}|} = $$
+			$${\begin{cases}
+				x \equiv m^{ed}\ (mod\ p)\\
+				x \equiv m^{ed}\ (mod\ q)
+			\end{cases}} = 
+			{\begin{cases}
+				x \equiv m^{\phi(n)+1}\ (mod\ p)\\
+				x \equiv m^{\phi(n)+1}\ (mod\ q)
+			\end{cases}} = 
+			{\begin{cases}
+				x \equiv m^{(p-1)(q-1)+1}\ (mod\ p)\\
+				x \equiv m^{(p-1)(q-1)+1}\ (mod\ q)
+			\end{cases}} = $$
+		$$ = \text{|по теореме Эйлера|} = 
+			{\begin{cases}
+				x \equiv m^{1}\ (mod\ p)\\
+				x \equiv m^{1}\ (mod\ q)
+			\end{cases}} = m\ mod\ n$$
+
+\end{center}
+
+При больших экспонентах обычное возведение в степень работает слишком медленно, поэтому на практике используются алгоритмы \href{https://yatb.kksctf.ru/}{быстрого возведения в степень}.
+
+\subsection{Пример}
+
+Возьмём параметры  $$p=17,\ q=23,\ n=391,$$ тогда получим $$\phi (n) = 16*22=352$$
+Выберем $e=13$, тогда $$d=325,$$ 
+тогда открытым ключом будет являться пара чисел $(391,13)$, а закрытым ключом - пара чисел $(391,325)$.
+
+Зашифруем открытый текст $m=42$ с помощью открытого ключа:
+$$c=42^{13}\ mod\ 391 = 12654377184338866624512\ mod\ 391 = 145$$
+
+Попробуем расшифровать сообщение, используя закрытый ключ:
+$$m=145^{325}\ mod\ 391=...=42$$
+
+В результате мы получили исходный открытый текст.
+
+\textbf{Источник:}
+
+\href{https://users.math-cs.spbu.ru/~okhotin/teaching/tcs2_2019/okhotin_tcs2alg_2019_l5.pdf}{https://users.math-cs.spbu.ru/~okhotin/teaching/tcs2\_2019/okhotin\_tcs2alg\_2019\_l5.pdf}
+
+\href{https://drive.google.com/file/d/1kDVpvknhUlwExL9yfiXJI2qRr1Wynu8w/view}{https://drive.google.com/file/d/1kDVpvknhUlwExL9yfiXJI2qRr1Wynu8w/view}
+
+\end{document}

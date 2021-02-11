@@ -1,0 +1,64 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Факторизация модуля $N$ по частичной информации о $N/4$ старших битах $p$ и известной нижней оценке $p$}
+
+Если нам известен порядок одного из множителей модуля $N$ $\beta$ такой, что $p > N^\beta$, то мы сможем восстановить множитель $p$, имея чуть больше чем $log_2(N)/4$ верхних бит числа $p$.
+
+Для этого нам нужно применить \href{https://yatb.kksctf.ru/}{метод Копперсмита} к многочлену следующего вида:
+
+$$f(x) = p_0 + x\ (mod\ p),$$
+
+где $p$ - один из множителей модуля $N$, а $p_0$ - известная нам верхняя часть бит.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/upper_bit_p.sage}
+
+\textbf{Источник информации об атаке факторизацией модуля $N$ по частичной информации о $N/4$ старших битах $p$ и известной нижней оценке $p$:}\\
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+Don Coppersmith. 1996. Finding a Small Root of a Bivariate Integer Equation;Factoring with High Bits Known. InProceedings of EUROCRYPT’96. Springer-Verlag, 178–189
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}
+
+Alexander May \textit{Using LLL-Reduction for Solving RSA and Factorization Problems}
+
+\section{Факторизация модуля $N$ по частичной информации о $N/4$ нижних битах $p$ и известной нижней оценке $p$}
+
+Данная атака аналогична изложенной ранее атаке \href{https://yatb.kksctf.ru/}{факторизации модуля $N$ по частичной информации о $N/4$ старших битах $p$ и известной нижней оценке $p$}, только теперь мы изменим уравнение на 
+
+$$f(x,y)=2^kx+p_0,$$
+
+потому что нам теперь известны не верхние, а нижние биты множителя $p$.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/lower_bit_p.sage}
+
+\textbf{Источник информации об атаке факторизацией модуля $N$ по частичной информации о $N/4$ младших битах $p$ и известной нижней оценке $p$:}
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+Don Coppersmith. 1996. Finding a Small Root of a Bivariate Integer Equation;Factoring with High Bits Known. InProceedings of EUROCRYPT’96. Springer-Verlag, 178–189
+
+\href{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey_final.pdf}{https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/survey\_final.pdf}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}
+
+Alexander May \textit{Using LLL-Reduction for Solving RSA and Factorization Problems}
+
+\end{document}

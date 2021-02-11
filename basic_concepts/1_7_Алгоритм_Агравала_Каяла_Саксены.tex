@@ -1,0 +1,36 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+
+\begin{document}
+	
+\section{Алгоритм Агравала - Каяла - Саксены}
+
+Рассмотрим алгоритм Агравала - Каяла - Саксены детерминированной проверки числа на простоту:
+
+\textbf{Ввод: } $n \in \mathbb{N},\ n>1$
+\begin{enumerate}
+	\item Если $n=a^{b}$ $a \in \mathbb{N}$ и целого $b > 1$, вернуть «составное».
+	\item Найдем наименьшее $r$, такое что $o_{r}(n)>(log_{2}(n))^{2}$.
+	\item Если $\text{НОД} ( a , n ) \neq 1$ для любого $a \leq r,$ вернуть "составное".
+	\item Если для всех $a$ от $1$ до $\lfloor \sqrt{r} log\ n \rfloor$ верно, что $(x+a)^{n} \equiv x^{n}+a\ (mod\ \phi(x), n)$, вернуть "простое".
+	\item Иначе вернуть "составное".
+\end{enumerate}
+
+Здесь  $o_{r}(n)$ обозначает показатель числа $n$  по модулю $r$ (то есть $n^{o_{r}(n)} \equiv 1\ (mod\ r)$), $\phi(x)$ - функция Эйлера.
+
+Вычислительная сложность этого алгоритма — $O(log^{6} n)$. \\
+
+\textbf{Источник:}
+
+\href{https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D1%81%D1%82_%D0%90%D0%B3%D1%80%D0%B0%D0%B2%D0%B0%D0%BB%D0%B0_%E2%80%94_%D0%9A%D0%B0%D1%8F%D0%BB%D0%B0_%E2%80%94_%D0%A1%D0%B0%D0%BA%D1%81%D0%B5%D0%BD%D1%8B}{https://ru.wikipedia.org/wiki/Тест\_Агравала\_—\_Каяла\_—\_Саксены}\\
+
+	
+\end{document}

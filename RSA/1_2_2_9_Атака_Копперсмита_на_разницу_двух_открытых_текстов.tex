@@ -1,0 +1,41 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+
+\begin{document}
+
+\section{Атака Копперсмита на разницу двух открытых текстов (Coppersmith’s short pad attack)}
+
+Метод атаки Копперсмита на разницу двух открытых текстов основан на следующих действиях нарушителя: 
+
+Абоненты при шифровании сообщения могут дополнять его некоторым фиксированным паддингом из $m$ случайных бит на одном из концов сообщения:
+
+$$M' = 2^mM+r$$
+
+Если при таком паддинге одно и то же сообщение будет послано два раза (например, атакующий может перехватить сообщение и не передавать его получателю - абонент в таком случае вышлет это сообщение ещё раз, но с другим паддингом, что и даст возможность выполнить данную атаку.)
+
+$$M_1 = 2^mM+r_1$$
+$$M_2 = 2^mM+r_2$$
+
+Для применения атаки мы составляем два многочлена:
+
+$$g_1(x,y)=x^e-C_1$$
+$$g_2(x,y)=(x+y)^e-C_2,$$
+
+где $y=r2-r1$ - корень результата $h(y)=res_x(g_1,g_2) \in \mathbb{Z}_N[y]$. Степень h не более $e^2$. Более того, $|y|< 2^m<N^{1/e^2}$, то есть $y$ является 'маленьким' корнем многочлена $h(y)$ по модулю N, а значит его можно вычислить \href{https://yatb.kksctf.ru/}{методом Копперсмита}. Если известно решение $y$, то из $M$ можно восстановить $M_1$ с помощью \href{https://yatb.kksctf.ru/}{атаки Франклина-Рейтера}, представив $M_2=M_1+y$ и составив зависимость $f(x)=x+y$.\\
+
+\textbf{Источники:}
+
+\href{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}{https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf}
+
+\href{http://honors.cs.umd.edu/reports/lowexprsa.pdf}{http://honors.cs.umd.edu/reports/lowexprsa.pdf} 
+
+\href{https://github.com/yud121212/Coppersmith-s-Short-Pad-Attack-Franklin-Reiter-Related-Message-Attack/blob/master/coppersmiths_short_pad_attack.sage}{https://github.com/.../coppersmiths\_short\_pad\_attack.sage}
+
+\end{document}

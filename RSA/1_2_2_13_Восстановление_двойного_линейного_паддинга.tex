@@ -1,0 +1,58 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{misccorr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{minted} %для вставки кода в документ
+
+\begin{document}
+
+\section{Решение задачи по восстановлению сообщения с двойным линейным паддингом}
+
+Здесь мы воспользуемся \href{https://yatb.kksctf.ru/}{алгоритмом Копперсмита для двух переменных}.
+
+Теперь мы обратим внимание на следующую атаку: например, мы знаем, что сообщение имеет вид: 'login: ... password: ...', где на месте троеточий стоят логин и пароль. При их достаточно малой длине мы сможем восстановить логин и пароль без знания закрытой экспоненты.
+
+Мы можем записать эту задачку в виде уравнения:
+
+$$f(x,y)=(A+Bx+y)^e - C \equiv 0\ (mod\ N)$$
+
+, где $A$ и $B$ - известные константы (те куски открытого текста, которые являются шаблоном), $C$ - перехваченный шифротекст, $e$ - открытая экспонента, а $N$  - модуль.
+
+Степень многочлена $deg(f(x))=e$, а значит неравенство для $m$ примет следующий вид:
+
+$$(XY)^{\dfrac{e^3}{6}m^3}M^{-\dfrac{e^2}{6}m^2} < 2^{-\dfrac{m^2e^2(m^2e^2-1)}{4}}(m^2e^2)^{-\dfrac{m^2e^2-1}{2}}$$
+
+Если выбрать $m=1$, то из неравенства мы получим оценки для $x_0$ и $y_0$.  
+
+Для примера возьмём модуль 4096 бит, $e=7$ и $X=Y=2^{56}$ (по 7 байт каждый из корней) - данные верхние границы были подобраны опытным путём (также опытным путём проверено, что далеко не для каждого 7-ми байтового паддинга восстановление возможно, поэтому в примере они будут начинаться с цифр, чтобы уменьшить корни искусственно). Не трудно убедиться, что для таких параметров неравенство выполняется. Если подходить достаточно грубо, то можно оценивать корни как $XY < N^{\dfrac{1}{e}}$ - такую оценку можно вывести из неравенства, которое мы проверяем (для совсем высоких значений $X$ и $Y$ эта оценка может солгать).
+
+Для определения границ троек $(i,j,k)$ выберем моном $x^4y^3$:
+
+
+$$(i,j,k) \in S = \left\{ (i,j,k) \in \mathbb{Z}^3 |\ i+j+7k \leq 7\text{ и }(i,j,k \geq 0)\text{ и }(i<4\text{ или }j<3)\right\}$$
+
+
+В результате чего получаем следующее множество троек:
+$$S = \{ (i,j,k) |\ (i=0,\ j=0,\ k=1)\text{ или }$$
+$$(i=\{0,1,2,3,4,5,6,7\},j=\{0,1,2\}, k=0)\text{ или } (i=\{0,1,2,3\},j=\{0,1,2,3,4,5,6,7\}, k=0)\}$$
+
+Далее действуем также, как как описано в теории про \href{https://yatb.kksctf.ru/}{двумерный случай алгоритма Копперсмита}, и получаем искомые 2 корня уравнения $(x_0,y_0)$.\\
+
+\textbf{Sage-реализация:}
+
+\inputminted[tabsize=4,obeytabs,fontsize=\footnotesize]{python3}{./RSA_scripts/two_paddings.sage}
+
+\textbf{Источники:}
+
+\href{http://theory.stanford.edu/~gdurf/durfee-thesis-phd.pdf}{http://theory.stanford.edu/~gdurf/durfee-thesis-phd.pdf} - начиная с 25 стр
+
+\href{https://github.com/KonstT-math/Durfee-Boneh_RSA/blob/master/boneh_durfee.sage}{https://github.com/KonstT-math/Durfee-Boneh\_RSA/blob/master/boneh\_durfee.sage}
+
+\href{https://www.di.ens.fr/~fouque/ens-rennes/coppersmith.pdf}{D.Coppersmith.Small solutions to polynomial equations, and low exponent RSA vulnerabilities. Journal of Cryptology, 10:233-260, 1997.}
+
+\end{document}
